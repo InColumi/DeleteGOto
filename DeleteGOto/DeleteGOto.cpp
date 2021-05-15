@@ -215,7 +215,7 @@ int GetModeFromConsole()
 	int exit = 0;
 	while(exit != 1)
 	{
-		
+
 		if((mode == "1") || (mode == "2") || (mode == "3"))
 		{
 			return atoi(mode.c_str());
@@ -241,6 +241,7 @@ void MethodCmdError();
 void MethodFileError();
 void MethodThisBegin();
 void MethodThisBeginFirst();
+void Solve();
 
 void ClearMemory(int*& arr)
 {
@@ -258,52 +259,58 @@ void MethodFileError()
 void MethodThisBeginFirst()
 {
 	string fileName;
-	cout << endl << "Введите имя файла с расширением txt: ";
-	cin >> fileName;
 	size_t end;
-
-	//последнее вхождения '.'
-	end = fileName.rfind('.');
-
-	//если нет расширения файла
-	if(end == string::npos)
+	bool isExit = false;
+	ifstream in;
+	
+	while(isExit == false)
 	{
-		cout << "Не указан формат файла." << endl;
-		return;
-	}
-	else
-	{
-		if(end != fileName.size())
+		cout << endl << "Введите имя файла с расширением txt: ";
+		cin >> fileName;
+		//последнее вхождения '.'
+		end = fileName.rfind('.');
+
+		//если нет расширения файла
+		if(end == string::npos)
 		{
-			string format = "";
-			//запись расширения после точки
-			for(size_t i = end + 1; i < fileName.size(); i++)
-			{
-				format += fileName[i];
-			}
-			//проверка соответствия расширения
-			if(format != "txt")
-			{
-				cout << "Неверный формат файла." << endl;
-				return;
-			}
+			cout << "Не указан формат файла." << endl;
 		}
 		else
 		{
-			cout << "Не указан формат файла." << endl;
-			return;
+			if(end != fileName.size())
+			{
+				string format = "";
+				//запись расширения после точки
+				for(size_t i = end + 1; i < fileName.size(); i++)
+				{
+					format += fileName[i];
+				}
+				//проверка соответствия расширения
+				if(format != "txt")
+				{
+					cout << "Неверный формат файла." << endl;
+				}
+				else
+				{
+					in.open(fileName, ios::in);
+					//проверка существования файла
+					if(in.is_open() == false)
+					{
+						cout << "Файл не найден." << endl;
+					}
+					else
+					{
+						isExit = true;
+					}
+				}
+			}
+			else
+			{
+				cout << "Не указан формат файла." << endl;
+			}
 		}
 	}
 
-	ifstream in;
-	in.open(fileName, ios::in);
-
-	//проверка существования файла
-	if(!(in.is_open()))
-	{
-		cout << "Файл не найден." << endl;
-		return;
-	}
 
 	MAP.clear();
 	N = 0; NZ = 0; //пер-ые отвечающие за размер матрицы и кол-во её ненулевых элементов
@@ -406,6 +413,11 @@ void MethodThisBeginFirst()
 		return;
 	}
 
+	Solve();
+}
+
+void Solve()
+{
 	AL = new int[AUi];
 	iTemp = 0;
 	for(int i = 0; i < N; i++)
@@ -548,64 +560,10 @@ void MethodThisBegin()
 	{
 		cout << "Неверный формат матрицы (не квадратная /";
 		cout << " присутствуют символы / не структурно-симметричная)" << endl;
-		MethodThisBegin();
+		return;
 	}
 
-	AL = new int[AUi];
-	iTemp = 0;
-	for(int i = 0; i < N; i++)
-	{
-		for(int j = i + 1; j < N; j++)
-		{
-			if(MAP[{j, i}] != 0)
-			{
-				AL[iTemp++] = MAP[{j, i}];
-			}
-		}
-	}
-	AU = new int[AUi];
-	LJ = new int[LJi];
-
-	for(int i = 0; i < LJi; i++)
-	{
-		LJ[i] = TLJ[i];
-	}
-	for(int i = 0; i < AUi; i++)
-	{
-		AU[i] = TAU[i];
-	}
-	//конец обработки остальных строк
-
-	//сумма элементов, лежащих на i+j - четное
-	Sum = 0;
-
-	//добавление эл-ов диагонали
-	for(int i = 0; i < N; i++)
-	{
-		Sum += AD[i];
-	}
-
-	//добавление эл-ов, лежащих выше диагонали и i+j - четное
-	for(int i = 0; i < N; i++)
-	{
-		for(int j = 2 + i; j < N; j += 2)
-		{
-			Sum += addElements(i, j, AU, LI, LJ);
-		}
-	}
-
-	//добавление элементов, лежащих ниже диагонали и i+j - четное
-	for(int i = 2; i < N; i++)
-	{
-		for(int j = i - 2; j >= 0; j -= 2)
-		{
-			Sum += addElements(j, i, AL, LI, LJ);
-		}
-	}
-
-	//вывод суммы эл-ов, где i+j - четное
-	cout << "Cумма элементов равна " << Sum << endl;
-	//main();
+	Solve();
 }
 
 void ClearAllMemory()
