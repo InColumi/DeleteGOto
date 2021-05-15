@@ -473,16 +473,26 @@ void MethodThisBegin()
 	N = 0; NZ = 0; //пер-ые отвечающие за размер матрицы и кол-во её ненулевых элементов
 
 	//начало обработки первой строки
-	if(first)
-		getline(cin, FLine);
-	getline(cin, FLine);
-	first = false;
-	couples = fLine(FLine);
-	if(!couples.first)
+	bool isExit = false;
+	while(isExit == false)
 	{
-		MethodCmdError();
-		return;
+		if(first)
+			getline(cin, FLine);
+		getline(cin, FLine);
+		first = false;
+		couples = fLine(FLine);
+		if(!couples.first)
+		{
+			MethodCmdError();
+			description();
+			continue;
+		}
+		else
+		{
+			isExit = true;
+		}
 	}
+	
 	F_elems = couples.second;
 	//создание массивов значений
 	TAU = new int[(N - 1) * N / 2];
