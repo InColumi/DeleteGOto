@@ -255,7 +255,7 @@ void MethodFileError()
 	ClearAllMemory();
 }
 
-void MethodThisBeginFirst()
+ifstream OpenFile()
 {
 	string fileName;
 	size_t end;
@@ -309,7 +309,12 @@ void MethodThisBeginFirst()
 			}
 		}
 	}
+	return in;
+}
 
+void MethodThisBeginFirst()
+{
+	ifstream in = OpenFile();
 
 	MAP.clear();
 	N = 0; NZ = 0; //пер-ые отвечающие за размер матрицы и кол-во её ненулевых элементов
