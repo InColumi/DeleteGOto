@@ -469,10 +469,11 @@ void MethodThisBegin()
 {
 	//начало обработки первой строки
 	bool isExit = false;
+	bool first = true;
 	while(isExit == false)
 	{
 		cout << "Вводите матрицу: \n";
-		bool first = true;
+		
 		MAP.clear();
 		N = 0; NZ = 0; //пер-ые отвечающие за размер матрицы и кол-во её ненулевых элементов
 		if(first)
