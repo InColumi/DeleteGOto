@@ -211,11 +211,11 @@ int GetModeFromConsole()
 	cout << "1. Чтение из файла\n";
 	cout << "2. Ввод с клавиатуры\n";
 	cout << "3. Выход\n";
-	cin >> mode;
+	
 	int exit = 0;
 	while(exit != 1)
 	{
-
+		cin >> mode;
 		if((mode == "1") || (mode == "2") || (mode == "3"))
 		{
 			return atoi(mode.c_str());
