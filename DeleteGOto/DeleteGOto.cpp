@@ -207,14 +207,15 @@ string FLine;
 int GetModeFromConsole()
 {
 	string mode = "";
-	cout << "\nВыберите пункт меню:" << endl;
-	cout << "1. Чтение из файла" << endl;
-	cout << "2. Ввод с клавиатуры" << endl;
-	cout << "3. Выход" << endl;
+	cout << "\nВыберите пункт меню:\n";
+	cout << "1. Чтение из файла\n";
+	cout << "2. Ввод с клавиатуры\n";
+	cout << "3. Выход\n";
+	cin >> mode;
 	int exit = 0;
 	while(exit != 1)
 	{
-		cin >> mode;
+		
 		if((mode == "1") || (mode == "2") || (mode == "3"))
 		{
 			return atoi(mode.c_str());
@@ -235,36 +236,23 @@ void description()
 	cout << "Ввод матрицы:" << endl;
 }
 
-void MethodER();
+void ClearAllMemory();
 void MethodCmdError();
 void MethodFileError();
 void MethodThisBegin();
 void MethodThisBeginFirst();
 
-void MethodER()
+void ClearMemory(int*& arr)
 {
-	if(sizeof(AD) / sizeof(int) > 1) delete[] AD;
-	if(sizeof(AU) / sizeof(int) > 1) delete[] AU;
-	if(sizeof(AL) / sizeof(int) > 1) delete[] AL;
-	if(sizeof(LJ) / sizeof(int) > 1) delete[] LJ;
-	if(sizeof(LI) / sizeof(int) > 1) delete[] LI;
-	if(sizeof(TLJ) / sizeof(int) > 1) delete[] TLJ;
-	if(sizeof(TAU) / sizeof(int) > 1) delete[] TAU;
-	AD = nullptr;
-	AU = nullptr;
-	AL = nullptr;
-	LJ = nullptr;
-	LI = nullptr;
-	TLJ = nullptr;
-	TAU = nullptr;
-	F_elems.clear();
+	if(sizeof(arr) / sizeof(int) > 1) delete[] arr;
+	arr = nullptr;
 }
 
 void MethodFileError()
 {
 	cout << "Неверный формат матрицы (не квадратная /";
 	cout << " присутствуют символы / не структурно-симметричная)" << endl;
-	MethodER();
+	ClearAllMemory();
 }
 
 void MethodThisBeginFirst()
@@ -281,7 +269,7 @@ void MethodThisBeginFirst()
 	if(end == string::npos)
 	{
 		cout << "Не указан формат файла." << endl;
-		MethodThisBeginFirst();
+		return;
 	}
 	else
 	{
@@ -297,13 +285,13 @@ void MethodThisBeginFirst()
 			if(format != "txt")
 			{
 				cout << "Неверный формат файла." << endl;
-				MethodThisBeginFirst();
+				return;
 			}
 		}
 		else
 		{
 			cout << "Не указан формат файла." << endl;
-			MethodThisBeginFirst();
+			return;
 		}
 	}
 
@@ -314,7 +302,7 @@ void MethodThisBeginFirst()
 	if(!(in.is_open()))
 	{
 		cout << "Файл не найден." << endl;
-		MethodThisBeginFirst();
+		return;
 	}
 
 	MAP.clear();
@@ -464,7 +452,6 @@ void MethodThisBeginFirst()
 
 	//вывод суммы эл-ов, если i+j - четное
 	cout << "Cумма элементов равна " << Sum << endl;
-	//main();
 }
 
 void MethodThisBegin()
@@ -621,48 +608,59 @@ void MethodThisBegin()
 	//main();
 }
 
+void ClearAllMemory()
+{
+	ClearMemory(AD);
+	ClearMemory(AU);
+	ClearMemory(AL);
+	ClearMemory(LJ);
+	ClearMemory(LI);
+	ClearMemory(TLJ);
+	ClearMemory(TAU);
+	F_elems.clear();
+}
+
 void MethodCmdError()
 {
-	if(sizeof(AD) / sizeof(int) > 1) delete[] AD;
-	if(sizeof(AU) / sizeof(int) > 1) delete[] AU;
-	if(sizeof(AL) / sizeof(int) > 1) delete[] AL;
-	if(sizeof(LJ) / sizeof(int) > 1) delete[] LJ;
-	if(sizeof(LI) / sizeof(int) > 1) delete[] LI;
-	if(sizeof(TLJ) / sizeof(int) > 1) delete[] TLJ;
-	if(sizeof(TAU) / sizeof(int) > 1) delete[] TAU;
-	AD = nullptr;
-	AU = nullptr;
-	AL = nullptr;
-	LJ = nullptr;
-	LI = nullptr;
-	TLJ = nullptr;
-	TAU = nullptr;
-	F_elems.clear();
+	ClearAllMemory();
 	cout << "Неверный формат матрицы (не квадратная /";
 	cout << " присутствуют символы / не структурно-симметричная)" << endl;
-	MethodThisBegin();
 }
 
 void Menu()
 {
-	int mode = GetModeFromConsole();
+	int mode;
 	//cin >> command;
-	if(mode == 2)
+	bool isExit = false;
+	while(isExit == false)
 	{
-		description();
-		//отметка при неверном вводе данных
-		MethodThisBegin();
-		MethodER();
+		mode = GetModeFromConsole();
+		switch(mode)
+		{
+			case 1:
+			{
+				MethodThisBeginFirst();
+				break;
+			}
+			case 2:
+			{
+				description();
+				//отметка при неверном вводе данных
+				MethodThisBegin();
+				break;
+			}
+			case 3:
+			{
+				cout << "До свидания!" << endl;
+				isExit = true;
+				break;
+			}
+			default:
+				cout << "Нет такой команды!\n";
+				break;
+		}
 	}
-	else if(mode == 1)
-	{
-		MethodThisBeginFirst();
-		MethodER();
-	}
-	else if(mode == 3)
-	{
-		cout << "До свидания!" << endl;
-	}
+	ClearAllMemory();
 }
 
 int main()
