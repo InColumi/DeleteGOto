@@ -481,6 +481,7 @@ void MethodThisBegin()
 	if(!couples.first)
 	{
 		MethodCmdError();
+		return;
 	}
 	F_elems = couples.second;
 	//создание массивов значений
