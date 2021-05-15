@@ -233,7 +233,6 @@ void description()
 	cout << "разреженной структурно-симметричной матрицы" << endl;
 	cout << "!Размер матрицы будет равен количеству элементов в первой строке" << endl;
 	cout << "Пример ввода:\n1 0\n0 0" << endl;
-	cout << "Ввод матрицы:" << endl;
 }
 
 void ClearAllMemory();
@@ -262,7 +261,7 @@ void MethodThisBeginFirst()
 	size_t end;
 	bool isExit = false;
 	ifstream in;
-	
+
 	while(isExit == false)
 	{
 		cout << endl << "Введите имя файла с расширением txt: ";
@@ -468,14 +467,14 @@ void Solve()
 
 void MethodThisBegin()
 {
-	bool first = true;
-	MAP.clear();
-	N = 0; NZ = 0; //пер-ые отвечающие за размер матрицы и кол-во её ненулевых элементов
-
 	//начало обработки первой строки
 	bool isExit = false;
 	while(isExit == false)
 	{
+		cout << "Вводите матрицу: \n";
+		bool first = true;
+		MAP.clear();
+		N = 0; NZ = 0; //пер-ые отвечающие за размер матрицы и кол-во её ненулевых элементов
 		if(first)
 			getline(cin, FLine);
 		getline(cin, FLine);
@@ -484,95 +483,115 @@ void MethodThisBegin()
 		if(!couples.first)
 		{
 			MethodCmdError();
-			description();
+			cout << "Ввод некорректный!";
+			
+			continue;
+		}
+
+		F_elems = couples.second;
+		//создание массивов значений
+		TAU = new int[(N - 1) * N / 2];
+		TLJ = new int[(N - 1) * N / 2];
+		AD = new int[N]; LI = new int[N];
+		ADi = 0; AUi = 0; ALi = 0; LJi = 0; LIi = 1;
+		LI[0] = 1;
+		iTemp = 0;
+		AD[ADi] = F_elems[ADi];
+		for(int i = ADi + 1; i < N; i++)
+		{
+			if(F_elems[i] != 0)
+			{
+				TAU[AUi++] = F_elems[i];
+				TLJ[LJi++] = i + 1;
+				MAP[{i, ADi}] = 1;
+
+			}
+		}
+		LI[LIi] = AUi - iTemp + LI[LIi - 1];
+		LIi++;
+		ADi++;
+		//конец обработки первой строки
+
+		//обработка остальных строк
+		squareMatrix = true;
+		bool isError = false;
+		for(; ADi < N; ADi++)
+		{
+			getline(cin, FLine);
+			couples = splitString(FLine);
+			F_elems = couples.second;
+
+			bool ch = false;
+			//установка лог. значения размера матрицы
+			if(F_elems.size() != N)
+			{
+				ch = true;
+				squareMatrix = false;
+			}
+
+			if(!ch)
+			{
+				iTemp = AUi;
+				AD[ADi] = F_elems[ADi];
+				for(int i = ADi + 1; i < N; i++)
+				{
+					if(F_elems[i] != 0)
+					{
+						TAU[AUi++] = F_elems[i];
+						TLJ[LJi++] = i + 1;
+						MAP[{i, ADi}] = 1;
+					}
+				}
+
+				//Проверка Если aij ≠ 0, то и aji ≠ 0;
+				//Если aij = 0, то и aji = 0;
+				for(int i = 0; i < ADi; i++)
+				{
+					if(isError)
+					{
+						break;
+					}
+					if(F_elems[i] == 0 && MAP[{ADi, i}] != 0)
+					{
+						isError = true;
+						continue;
+					}
+					if(F_elems[i] != 0 && MAP[{ADi, i}] == 0)
+					{
+						isError = true;
+						continue;
+					}
+					MAP[{ADi, i}] = F_elems[i];
+				}
+				if(isError)
+				{
+					break;
+				}
+			}
+
+			LI[LIi] = AUi - iTemp + LI[LIi - 1];
+			LIi++;
+		}
+		//проверка соответсвия матрицы условию
+
+		if(isError)
+		{
+			MethodCmdError();
+			continue;
+		}
+		if(squareMatrix == false)
+		{
+			MethodCmdError();
 			continue;
 		}
 		else
 		{
 			isExit = true;
 		}
+
 	}
-	
-	F_elems = couples.second;
-	//создание массивов значений
-	TAU = new int[(N - 1) * N / 2];
-	TLJ = new int[(N - 1) * N / 2];
-	AD = new int[N]; LI = new int[N];
-	ADi = 0; AUi = 0; ALi = 0; LJi = 0; LIi = 1;
-	LI[0] = 1;
-	iTemp = 0;
-	AD[ADi] = F_elems[ADi];
-	for(int i = ADi + 1; i < N; i++)
-	{
-		if(F_elems[i] != 0)
-		{
-			TAU[AUi++] = F_elems[i];
-			TLJ[LJi++] = i + 1;
-			MAP[{i, ADi}] = 1;
 
-		}
-	}
-	LI[LIi] = AUi - iTemp + LI[LIi - 1];
-	LIi++;
-	ADi++;
-	//конец обработки первой строки
 
-	//обработка остальных строк
-	squareMatrix = true;
-	for(; ADi < N; ADi++)
-	{
-		getline(cin, FLine);
-		couples = splitString(FLine);
-		F_elems = couples.second;
-
-		bool ch = false;
-		//установка лог. значения размера матрицы
-		if(F_elems.size() != N)
-		{
-			ch = true;
-			squareMatrix = false;
-		}
-
-		if(!ch)
-		{
-			iTemp = AUi;
-			AD[ADi] = F_elems[ADi];
-			for(int i = ADi + 1; i < N; i++)
-			{
-				if(F_elems[i] != 0)
-				{
-					TAU[AUi++] = F_elems[i];
-					TLJ[LJi++] = i + 1;
-					MAP[{i, ADi}] = 1;
-				}
-			}
-
-			//Проверка Если aij ≠ 0, то и aji ≠ 0;
-			//Если aij = 0, то и aji = 0;
-			for(int i = 0; i < ADi; i++)
-			{
-				if(F_elems[i] == 0 && MAP[{ADi, i}] != 0)
-				{
-					MethodCmdError();
-				}
-				if(F_elems[i] != 0 && MAP[{ADi, i}] == 0)
-				{
-					MethodCmdError();
-				}
-				MAP[{ADi, i}] = F_elems[i];
-			}
-		}
-
-		LI[LIi] = AUi - iTemp + LI[LIi - 1];
-		LIi++;
-	}
-	//проверка соответсвия матрицы условию
-	if(squareMatrix == false)
-	{
-		cout << "Неверный формат матрицы (не квадратная /";
-		cout << " присутствуют символы / не структурно-симметричная)" << endl;
-		return;
-	}
 
 	Solve();
 }
